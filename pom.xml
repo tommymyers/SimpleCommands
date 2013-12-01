@@ -1,0 +1,68 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>me.tommykins20.utils</groupId>
+  <artifactId>SimpleCommands</artifactId>
+  <version>1.0</version>
+  <packaging>jar</packaging>
+  <description>SimpleCommands is a Developer API for CraftBukkit plugins designed to make command handling for developers a breeze.</description>
+
+  <name>SimpleCommands</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <plugin_name>${project.name}</plugin_name>
+    <plugin_version>${project.version}</plugin_version>
+    <plugin_author>tommykins20</plugin_author>
+    <plugin_main>${project.groupId}.simplecommands.${plugin_name}</plugin_main>
+    <plugin_description>${project.description}</plugin_description>
+    <craftbukkit_version>1.6.4-R2.1-SNAPSHOT</craftbukkit_version>
+  </properties>
+  
+  <build>
+      <resources>
+          <resource>
+              <targetPath>.</targetPath>
+              <directory>${basedir}/src/main/resources</directory>
+              <filtering>true</filtering>
+              <includes>
+                  <include>plugin.yml</include>
+              </includes>
+          </resource>
+      </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  
+  <repositories>
+      <repository>
+          <id>bukkit-repo</id>
+          <url>http://repo.bukkit.org/content/groups/public/</url>
+      </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.bukkit</groupId>
+      <artifactId>craftbukkit</artifactId>
+      <version>${craftbukkit_version}</version>
+    </dependency>
+  </dependencies>
+</project>
