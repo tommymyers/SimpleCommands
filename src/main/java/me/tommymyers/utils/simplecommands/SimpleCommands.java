@@ -1,4 +1,4 @@
-package me.tommykins20.utils.simplecommands;
+package me.tommymyers.utils.simplecommands;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -19,7 +19,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.v1_6_R3.CraftServer;
+//import org.bukkit.craftbukkit.v1_6_R3.CraftServer;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,9 +30,8 @@ public class SimpleCommands extends JavaPlugin {
     private String pluginName;
     private String pluginVersion;
     private String pluginAuthor;
-    private List<String> pluginAuthors;
     private String pluginDescription;
-    private Logger logger;
+    private static final Logger LOGGER = Logger.getLogger("Minecraft");
     private static Manager manager;
 
     /**
@@ -47,9 +46,7 @@ public class SimpleCommands extends JavaPlugin {
         pluginName = pdf.getName();
         pluginVersion = pdf.getVersion();
         pluginAuthor = pdf.getAuthors().get(0);
-        pluginAuthors = pdf.getAuthors();
         pluginDescription = pdf.getDescription();
-        logger = Logger.getLogger("Minecraft");
         manager = new Manager(this);
         /**
          * END INITIALIZATION
@@ -62,7 +59,7 @@ public class SimpleCommands extends JavaPlugin {
             public boolean myCommand(CommandSender sender, Command command, String label, String[] args) {
                 sender.sendMessage("This server has " + pluginName + " v" + pluginVersion + ".");
                 sender.sendMessage(pluginDescription);
-                sender.sendMessage("Authors: " + combineList(pluginAuthors, ", "));
+                sender.sendMessage("Author: " + pluginAuthor);
                 return true;
             }
         });
@@ -82,7 +79,7 @@ public class SimpleCommands extends JavaPlugin {
      * @param message Message to be logged to the console.
      */
     public void logMessage(String message) {
-        logger.log(Level.INFO, "[" + pluginName + "] {0}", message);
+        LOGGER.log(Level.INFO, "[" + pluginName + "] {0}", message);
     }
 
     /**
@@ -97,20 +94,6 @@ public class SimpleCommands extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         return manager.executeCommand(sender, command, label, args);
-    }
-
-    /**
-     *
-     * @param list List of items to display.
-     * @param separator String to separate each item. e.g. ", " which results in: foo, bar
-     * @return The combined list of each item in the given list separated with the given separator.
-     */
-    private String combineList(List list, String separator) {
-        String combined = (String) list.get(0);
-        for (int i = 1; i < list.size(); i++) {
-            combined += separator + list.get(i);
-        }
-        return combined;
     }
 
     /**
@@ -270,85 +253,69 @@ public class SimpleCommands extends JavaPlugin {
         /**
          * Reads and registers all the commands from all the other plugin's command listeners.
          */
-        private void loadAndRegisterCommandsForPluginAndListener(Plugin plugin, CommandListener listener) {
+        private void loadAndRegisterCommandsForPluginAndListener(Plugin plugin, CommandListener listener) throws Exception {
             commands.clear();
             Plugin plugins = plugin;
-            try {
-                String name;
-                String description;
-                String usage;
-                String permission;
-                String noPermissionMessage;
-                List<String> aliases;
-                Class craftServerClass = CraftServer.class;
-                CraftServer craftServer = (CraftServer) Bukkit.getServer();
-                Field map = craftServerClass.getDeclaredField("commandMap");
-                map.setAccessible(true);
-                SimpleCommandMap cmdMap = (SimpleCommandMap) map.get(craftServer);
-                Class cmdClass = PluginCommand.class;
-                Constructor cons = cmdClass.getDeclaredConstructor(String.class, Plugin.class);//String.class, String.class, List.class);
-                cons.setAccessible(true);
-                Class list = listener.getClass();
-                Method[] methods = list.getDeclaredMethods();
-                methodcheck:
-                for (Method method : methods) {
-                    if (method.getModifiers() != Modifier.PUBLIC) {
-                        continue;
-                    }
-                    boolean isBoolean = method.getReturnType().equals(boolean.class);
-                    if (method.getReturnType().equals(void.class) || isBoolean) {
-                        Annotation[] annots = method.getDeclaredAnnotations();
-                        for (Annotation annot : annots) {
-                            if (annot instanceof CommandHandler) {
-                                CommandHandler handle = (CommandHandler) annot;
-                                if (handle.name() != null) {
-                                    Class<?>[] pars = method.getParameterTypes();
-                                    if (pars.length >= 3 && pars.length <= 4) {
-                                        boolean isFormattedCorrectly = ((pars[0].equals(CommandSender.class) && pars[1].equals(String.class)
-                                                && pars[2].equals(String[].class)) && pars.length == 3) || ((pars[0].equals(CommandSender.class)
-                                                && pars[1].equals(Command.class) && pars[2].equals(String.class)
-                                                && pars[3].equals(String[].class)) && pars.length == 4);
-                                        if (!isFormattedCorrectly) {
-                                            continue methodcheck;
-                                        }
-                                        name = handle.name();
-                                        usage = handle.usage();
-                                        description = handle.description();
-                                        aliases = Arrays.asList(handle.aliases());
-                                        permission = handle.permission();
-                                        noPermissionMessage = handle.noPermissionMessage();
-                                        if (doesPluginHaveDefaultNoPermissionMessage(plugins)) {
-                                            noPermissionMessage = getPluginDefaultNoPermissionMessage(plugins);
-                                        }
-                                        PluginCommand command = (PluginCommand) cons.newInstance(name, plugins);
-                                        command.setUsage(usage);
-                                        command.setDescription(description);
-                                        command.setAliases(aliases);
-                                        command.setPermission(permission);
-                                        command.setPermissionMessage(noPermissionMessage);
-                                        command.setExecutor(plugins);
-                                        cmdMap.register("", command);
-                                        commands.add(command);
+            String name;
+            String description;
+            String usage;
+            String permission;
+            String noPermissionMessage;
+            List<String> aliases;
+            Class craftServerClass = Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".CraftServer");
+            Object craftServer = Bukkit.getServer();
+            Field map = craftServerClass.getDeclaredField("commandMap");
+            map.setAccessible(true);
+            SimpleCommandMap cmdMap = (SimpleCommandMap) map.get(craftServer);
+            Class cmdClass = PluginCommand.class;
+            Constructor cons = cmdClass.getDeclaredConstructor(String.class, Plugin.class);
+            cons.setAccessible(true);
+            Class list = listener.getClass();
+            Method[] methods = list.getDeclaredMethods();
+            methodcheck:
+            for (Method method : methods) {
+                if (method.getModifiers() != Modifier.PUBLIC) {
+                    continue;
+                }
+                boolean isBoolean = method.getReturnType().equals(boolean.class);
+                if (method.getReturnType().equals(void.class) || isBoolean) {
+                    Annotation[] annots = method.getDeclaredAnnotations();
+                    for (Annotation annot : annots) {
+                        if (annot instanceof CommandHandler) {
+                            CommandHandler handle = (CommandHandler) annot;
+                            if (handle.name() != null) {
+                                Class<?>[] pars = method.getParameterTypes();
+                                if (pars.length >= 3 && pars.length <= 4) {
+                                    boolean isFormattedCorrectly = ((pars[0].equals(CommandSender.class) && pars[1].equals(String.class)
+                                            && pars[2].equals(String[].class)) && pars.length == 3) || ((pars[0].equals(CommandSender.class)
+                                            && pars[1].equals(Command.class) && pars[2].equals(String.class)
+                                            && pars[3].equals(String[].class)) && pars.length == 4);
+                                    if (!isFormattedCorrectly) {
+                                        continue methodcheck;
                                     }
+                                    name = handle.name();
+                                    usage = handle.usage();
+                                    description = handle.description();
+                                    aliases = Arrays.asList(handle.aliases());
+                                    permission = handle.permission();
+                                    noPermissionMessage = handle.noPermissionMessage();
+                                    if (doesPluginHaveDefaultNoPermissionMessage(plugins)) {
+                                        noPermissionMessage = getPluginDefaultNoPermissionMessage(plugins);
+                                    }
+                                    PluginCommand command = (PluginCommand) cons.newInstance(name, plugins);
+                                    command.setUsage(usage);
+                                    command.setDescription(description);
+                                    command.setAliases(aliases);
+                                    command.setPermission(permission);
+                                    command.setPermissionMessage(noPermissionMessage);
+                                    command.setExecutor(plugins);
+                                    cmdMap.register("", command);
+                                    commands.add(command);
                                 }
                             }
                         }
                     }
                 }
-            } catch (NoSuchMethodException ex) {
-                Logger.getLogger(SimpleCommands.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SecurityException ex) {
-                Logger.getLogger(SimpleCommands.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InstantiationException ex) {
-                Logger.getLogger(SimpleCommands.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalAccessException ex) {
-                Logger.getLogger(SimpleCommands.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalArgumentException ex) {
-                Logger.getLogger(SimpleCommands.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InvocationTargetException ex) {
-                Logger.getLogger(SimpleCommands.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NoSuchFieldException ex) {
-                Logger.getLogger(SimpleCommands.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
@@ -368,7 +335,11 @@ public class SimpleCommands extends JavaPlugin {
             }
             removeAllPluginListeners(plugin);
             registeredListeners.put(plugin, listeners);
-            loadAndRegisterCommandsForPluginAndListener(plugin, listener);
+            try {
+                loadAndRegisterCommandsForPluginAndListener(plugin, listener);
+            } catch (Exception ex) {
+                Logger.getLogger(SimpleCommands.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
         /**

@@ -1,4 +1,4 @@
-package me.tommykins20.utils.simplecommands;
+package me.tommymyers.utils.simplecommands;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

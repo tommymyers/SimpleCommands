@@ -2,9 +2,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>me.tommykins20.utils</groupId>
+  <groupId>me.tommymyers.utils</groupId>
   <artifactId>SimpleCommands</artifactId>
-  <version>1.0</version>
+  <version>1.0.1</version>
   <packaging>jar</packaging>
   <description>SimpleCommands is a Developer API for CraftBukkit plugins designed to make command handling for developers a breeze.</description>
 
@@ -18,7 +18,6 @@
     <plugin_author>tommykins20</plugin_author>
     <plugin_main>${project.groupId}.simplecommands.${plugin_name}</plugin_main>
     <plugin_description>${project.description}</plugin_description>
-    <craftbukkit_version>1.6.4-R2.1-SNAPSHOT</craftbukkit_version>
   </properties>
   
   <build>
@@ -46,10 +45,10 @@
   </build>
   
   <repositories>
-      <repository>
-          <id>bukkit-repo</id>
-          <url>http://repo.bukkit.org/content/groups/public/</url>
-      </repository>
+    <repository>
+      <id>spigot-repo</id>
+      <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+    </repository>
   </repositories>
 
   <dependencies>
@@ -60,9 +59,16 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>craftbukkit</artifactId>
-      <version>${craftbukkit_version}</version>
+           <groupId>org.spigotmc</groupId>
+           <artifactId>spigot-api</artifactId>
+           <version>1.12.2-R0.1-SNAPSHOT</version>
+           <scope>provided</scope>
+    </dependency>
+    <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>1.12.2-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>
