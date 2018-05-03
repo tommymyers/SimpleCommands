@@ -2,9 +2,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>me.tommymyers.utils</groupId>
+  <groupId>me.tommymyers.simplecommands</groupId>
   <artifactId>SimpleCommands</artifactId>
-  <version>1.0.1</version>
+  <version>1.1</version>
   <packaging>jar</packaging>
   <description>SimpleCommands is a Developer API for CraftBukkit plugins designed to make command handling for developers a breeze.</description>
 
@@ -13,11 +13,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <plugin_name>${project.name}</plugin_name>
-    <plugin_version>${project.version}</plugin_version>
-    <plugin_author>tommykins20</plugin_author>
-    <plugin_main>${project.groupId}.simplecommands.${plugin_name}</plugin_main>
-    <plugin_description>${project.description}</plugin_description>
+    <plugin_author>Tommy Myers</plugin_author>
+    <plugin_main>${project.groupId}.${project.name}</plugin_main>
   </properties>
   
   <build>
@@ -37,8 +34,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.3.2</version>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.7</source>
+          <target>1.7</target>
         </configuration>
       </plugin>
     </plugins>

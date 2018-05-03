@@ -1,5 +1,5 @@
-name: ${plugin_name}
-version: ${plugin_version}
+name: ${project.name}
+version: ${project.version}
 author: ${plugin_author}
 main: ${plugin_main}
-description: ${plugin_description}
+description: ${project.description}
